@@ -1,22 +1,44 @@
 import React, { Component } from 'react';
 import { Form, Button, Segment } from 'semantic-ui-react';
 
+const emptyContact = {
+  firstName: '',
+  lastName: '',
+  phone: '',
+  company: '',
+  email: '',
+  photo: ''
+};
+
 class ContactForm extends Component {
 
   state = {
-    contact: {
-      firstName: '',
-      lastName: '',
-      phone: '',
-      company: '',
-      email: '',
-      photo: ''
+    contact: emptyContact
+  };
+
+  componentDidMount() {
+    if (this.props.selectedContact !== null) {
+      this.setState({
+        contact: this.props.selectedContact
+      });
+    }
+  };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.selectedContact !== this.props.selectedContact) {
+      this.setState({
+        contact: nextProps.selectedContact || emptyContact
+      });
     }
   };
 
   onFormSubmit = evt => {
     evt.preventDefault();
-    this.props.createContact(this.state.contact);
+    if (this.state.contact.id) {
+      this.props.updateContact(this.state.contact);
+    } else {
+      this.props.createContact(this.state.contact);
+    }
   };
 
   onInputChange = evt => {

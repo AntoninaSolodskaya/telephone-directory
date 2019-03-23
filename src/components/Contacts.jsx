@@ -3,7 +3,7 @@ import { Card, Image, Button, List } from 'semantic-ui-react';
 
 class Contacts extends Component {
   render() {
-    const { contact } = this.props;
+    const { contact, onContactOpen, deleteContact } = this.props;
     return (
       <Card style={{ width: "500px" }}>
         <Card.Content>
@@ -29,8 +29,22 @@ class Contacts extends Component {
             </List.Item>
           </List>
           <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flexWrap: "wrap"}}>
-            <Button circular basic color='green' icon="edit" />
-            <Button circular basic color='red' icon="trash" />
+            <Button 
+              as="a" 
+              circular 
+              basic 
+              color='green' 
+              icon="edit" 
+              onClick={onContactOpen(contact)} 
+            />
+            <Button 
+              as="a" 
+              circular 
+              basic 
+              color='red' 
+              icon="trash" 
+              onClick={deleteContact(contact.id)} 
+            />
           </div>
         </Card.Content>
       </Card>

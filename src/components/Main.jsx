@@ -27,12 +27,14 @@ const contacts = [
 class Main extends Component {
   state = {
     contacts,
-    isOpen: false
+    isOpen: false,
+    selectedContact: null
   };
 
   handleFormOpen = () => {
     this.setState({
-      isOpen: true
+      isOpen: true,
+      selectedContact: null
     });
   };
 
@@ -41,6 +43,27 @@ class Main extends Component {
       isOpen: false
     });
   };
+
+  handleUpdateContact = updatedContact => {
+    this.setState({
+      contacts: this.state.contacts.map(contact => {
+        if (contact.id === updatedContact.id) {
+          return Object.assign({}, updatedContact);
+        } else {
+          return contact
+        }
+      }),
+      isOpen: false,
+      selectedContact: null
+    });
+  };
+  
+  handleOpenContact = contactToOpen => () => {
+    this.setState({
+      selectedContact: contactToOpen,
+      isOpen: true
+    })
+  }
 
   handleCreateContact = newContact => {
     newContact.id = cuid();
@@ -52,7 +75,15 @@ class Main extends Component {
     });
   };
 
+  handleDeleteContact = contactId => () => {
+    const updatedContacts = this.state.contacts.filter(e => e.id !== contactId);
+    this.setState({
+      contacts: updatedContacts
+    });
+  };
+
   render() {
+    const {selectedContact} = this.state;
     return (
       <div>
         <Header as='h1' textAlign='center' color="teal">My Phone Book</Header>
@@ -65,11 +96,11 @@ class Main extends Component {
               onClick={this.handleFormOpen}
             />
             {this.state.isOpen && (
-              <ContactForm createContact={this.handleCreateContact} handleCancel={this.handleCancel} />
+              <ContactForm updateContact={this.handleUpdateContact} selectedContact={selectedContact} createContact={this.handleCreateContact} handleCancel={this.handleCancel} />
             )}
           </Grid.Column>
           <Grid.Column width={10} style={{ paddingTop: "15px" }}> 
-            <ContactList contacts={this.state.contacts} />
+            <ContactList deleteContact={this.handleDeleteContact} onContactOpen={this.handleOpenContact} contacts={this.state.contacts} />
           </Grid.Column>
         </Grid>
       </div>
