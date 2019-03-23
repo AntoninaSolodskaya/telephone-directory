@@ -1,24 +1,27 @@
 import React, { Component } from 'react';
 import { Container } from 'semantic-ui-react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import Main from '../components/Main';
 import NavBar from '../components/NavBar';
-import ContactForm from '../components/ContactForm';
+import { configureStore } from './store/configureStore';
+
+const store = configureStore();
 
 class App extends Component {
   render() {
     return (
-      <BrowserRouter>
-        <div>
-          <NavBar />
-          <Container className="main">
-            <Switch>
-              <Route path="/" component={Main} />
-              <Route path="/addContact" component={ContactForm} />
-            </Switch>
-          </Container>
-        </div>
-      </BrowserRouter>  
+      <Provider store={store}>
+        <BrowserRouter>
+          <div>
+            <NavBar />
+            <Container className="main">
+             <Main />
+            </Container>
+          </div>
+        </BrowserRouter>  
+      </Provider>
+      
     );
   }
 }

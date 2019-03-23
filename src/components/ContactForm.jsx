@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Form, Button, Segment } from 'semantic-ui-react';
+import { createContact, updateContact } from '../app/actions/contactActions';
+import cuid from 'cuid';
 
 const emptyContact = {
   firstName: '',
@@ -9,6 +12,11 @@ const emptyContact = {
   email: '',
   photo: ''
 };
+
+const actions = {
+  createContact,
+  updateContact
+}
 
 class ContactForm extends Component {
 
@@ -37,7 +45,12 @@ class ContactForm extends Component {
     if (this.state.contact.id) {
       this.props.updateContact(this.state.contact);
     } else {
-      this.props.createContact(this.state.contact);
+      const newContact = {
+        ...this.state.contact,
+        id: cuid(),
+        photo: '/assets/user.png'
+      }
+      this.props.createContact(newContact);
     }
   };
 
@@ -79,7 +92,11 @@ class ContactForm extends Component {
             <label>Photo</label>
             <input name="photo" onChange={this.onInputChange} value={contact.photo} placeholder='Your Photo' />
           </Form.Field>
-          <Button type='submit' color="teal" content="Submit"/>
+          <Button 
+            type='submit' 
+            color="teal" 
+            content="Submit"
+          />
           <Button 
             type='button'
             color='grey'
@@ -94,4 +111,4 @@ class ContactForm extends Component {
   }
 }
 
-export default ContactForm;
+export default connect(null,actions)(ContactForm);

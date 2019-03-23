@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Input, Menu, Button } from 'semantic-ui-react';
-import { NavLink, Link } from 'react-router-dom';
+import { Container, Input, Menu } from 'semantic-ui-react';
 
 class NavBar extends Component {
   render() {
@@ -9,27 +8,9 @@ class NavBar extends Component {
         <Menu inverted fixed="top" style={{backgroundColor: "teal"}}>
           <Container>
             <Menu.Item 
-              as={NavLink} 
-              to="/" 
-              name="Contacts" 
+              name="My Phone Book" 
               style={{ fontSize: "22px"}} 
             />
-            <Menu.Item>
-              <Button
-                as={Link}
-                to="/addContact"
-                floated="right"
-                inverted
-                content="Create Contact"
-              />
-            </Menu.Item>
-            <Menu.Item>
-              <Button
-                floated="right"
-                inverted
-                content="Change Contact"
-              />
-            </Menu.Item>
           </Container>
           <Menu.Menu position="right">
             <Menu.Item>

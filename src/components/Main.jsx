@@ -1,32 +1,21 @@
 import React, { Component } from 'react';
-import { Grid, Header, Button } from 'semantic-ui-react';
-import cuid from 'cuid';
+import { connect } from 'react-redux';
+import { Grid, Button } from 'semantic-ui-react';
 import ContactList from './ContactList';
 import ContactForm from './ContactForm';
+import { createContact, deleteContact, updateContact } from '../app/actions/contactActions';
 
-const contacts = [
-  {
-    id: '1',
-    firstName: 'John',
-    lastName: 'Watson',
-    phone: '+3805022244466',
-    company: 'Singapur',
-    email: 'test@gmail.com',
-    photo: 'https://randomuser.me/api/portraits/men/22.jpg'
-  },{
-    id: '8',
-    firstName: 'Bob',
-    lastName: 'Doe',
-    phone: '+3809855566688',
-    company: 'SityMall',
-    email: 'bob@test.com',
-    photo: 'https://randomuser.me/api/portraits/men/20.jpg'
-  }
-];
+const mapState = state => ({
+  contacts: state.contacts
+});
 
+const actions = {
+  createContact,
+  deleteContact,
+  updateContact
+}
 class Main extends Component {
   state = {
-    contacts,
     isOpen: false,
     selectedContact: null
   };
@@ -44,15 +33,9 @@ class Main extends Component {
     });
   };
 
-  handleUpdateContact = updatedContact => {
+  handleUpdateContact = () => {
+    this.props.updateContact();
     this.setState({
-      contacts: this.state.contacts.map(contact => {
-        if (contact.id === updatedContact.id) {
-          return Object.assign({}, updatedContact);
-        } else {
-          return contact
-        }
-      }),
       isOpen: false,
       selectedContact: null
     });
@@ -65,28 +48,15 @@ class Main extends Component {
     })
   }
 
-  handleCreateContact = newContact => {
-    newContact.id = cuid();
-    newContact.photo = '/assets/user.png';
-    const updatedContact = [...this.state.contacts, newContact];
-    this.setState({
-      contacts: updatedContact,
-      isOpen: false
-    });
-  };
-
   handleDeleteContact = contactId => () => {
-    const updatedContacts = this.state.contacts.filter(e => e.id !== contactId);
-    this.setState({
-      contacts: updatedContacts
-    });
+    this.props.deleteContact(contactId);
   };
 
   render() {
-    const {selectedContact} = this.state;
+    const { selectedContact } = this.state;
+    const { contacts } = this.props;
     return (
       <div>
-        <Header as='h1' textAlign='center' color="teal">My Phone Book</Header>
         <Grid>
           <Grid.Column width={6}>
             <Button
@@ -96,11 +66,18 @@ class Main extends Component {
               onClick={this.handleFormOpen}
             />
             {this.state.isOpen && (
-              <ContactForm updateContact={this.handleUpdateContact} selectedContact={selectedContact} createContact={this.handleCreateContact} handleCancel={this.handleCancel} />
+              <ContactForm 
+                selectedContact={selectedContact} 
+                handleCancel={this.handleCancel} 
+              />
             )}
           </Grid.Column>
           <Grid.Column width={10} style={{ paddingTop: "15px" }}> 
-            <ContactList deleteContact={this.handleDeleteContact} onContactOpen={this.handleOpenContact} contacts={this.state.contacts} />
+            <ContactList 
+              deleteContact={this.handleDeleteContact} 
+              onContactOpen={this.handleOpenContact} 
+              contacts={contacts} 
+            />
           </Grid.Column>
         </Grid>
       </div>
@@ -109,4 +86,4 @@ class Main extends Component {
   }
 }
 
-export default Main;
+export default connect(mapState, actions)(Main);

@@ -8,9 +8,14 @@ class ContactList extends Component {
 
     return (
       <div>
-        <h3>Contacts:</h3>
+        <h3 style={{color: "teal"}}>Contacts:</h3>
         {contacts && contacts.map(contact => (
-          <Contacts key={contact.id} contact={contact} onContactOpen={onContactOpen} deleteContact={deleteContact} />
+          <Contacts 
+            key={contact.id} 
+            contact={contact} 
+            onContactOpen={onContactOpen} 
+            deleteContact={deleteContact} 
+          />
         ))}
       </div>
       

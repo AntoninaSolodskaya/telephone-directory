@@ -30,7 +30,6 @@ class Contacts extends Component {
           </List>
           <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flexWrap: "wrap"}}>
             <Button 
-              as="a" 
               circular 
               basic 
               color='green' 
@@ -38,7 +37,6 @@ class Contacts extends Component {
               onClick={onContactOpen(contact)} 
             />
             <Button 
-              as="a" 
               circular 
               basic 
               color='red' 
