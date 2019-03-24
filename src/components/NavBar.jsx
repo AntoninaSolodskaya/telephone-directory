@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Input, Menu } from 'semantic-ui-react';
+import { NavLink, Link } from 'react-router-dom';
+import { Container, Input, Menu, Button } from 'semantic-ui-react';
 
 class NavBar extends Component {
   render() {
@@ -11,6 +12,19 @@ class NavBar extends Component {
               name="My Phone Book" 
               style={{ fontSize: "22px"}} 
             />
+            <Menu.Item 
+              as={NavLink}
+              to="/contacts"
+              name="Contacts" 
+              style={{ fontSize: "22px"}} 
+            />
+            <Menu.Item>
+              <Button 
+                as={Link}
+                to="/addContact"
+                content="AddContact" 
+              />
+            </Menu.Item>
           </Container>
           <Menu.Menu position="right">
             <Menu.Item>
@@ -23,5 +37,5 @@ class NavBar extends Component {
   }
 }
 
-export default  NavBar;
+export default NavBar;
   

@@ -1,114 +1,148 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Field, reduxForm } from 'redux-form';
+import { composeValidators, combineValidators, isNumeric, createValidator, isRequired, hasLengthGreaterThan } from 'revalidate';
 import { Form, Button, Segment } from 'semantic-ui-react';
 import { createContact, updateContact } from '../app/actions/contactActions';
 import cuid from 'cuid';
+import TextInput  from '../app/form/TextInput';
+import FileInput from '../app/form/FileInput';
 
-const emptyContact = {
-  firstName: '',
-  lastName: '',
-  phone: '',
-  company: '',
-  email: '',
-  photo: ''
+const mapState = (state, ownProps) => {
+  const contactId = ownProps.match.params.id;
+
+  let contact = {};
+
+  if (contactId && state.contacts.length > 0) {
+    contact = state.contacts.filter(contact => contact.id === contactId)[0];
+  }
+
+  return {
+    initialValues: contact
+  }
 };
+
 
 const actions = {
   createContact,
   updateContact
-}
+};
+
+const customIsRequired = isRequired({ message: 'Required' });
+const isValidEmail = createValidator(
+  message => value => {
+    if (value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
+      return message
+    }
+  },
+  'Invalid email address'
+);
+
+const validate = combineValidators({
+  firstName: composeValidators(
+    isRequired({message: "Name is required"}),
+    hasLengthGreaterThan(3)({message: "Needs to be at lest 4 charcters"})
+  )(),
+  lastName: composeValidators(
+    isRequired({message: "Name is required"}),
+    hasLengthGreaterThan(3)({message: "Needs to be at lest 4 charcters"})
+  )(),
+  phone: composeValidators(
+    customIsRequired,
+    isNumeric({
+      message: 'Must be a number'
+    }),
+    hasLengthGreaterThan(11)({
+      message: 'Must be 12 characters or less'
+    })
+  )(),
+  company: isRequired({message: "Company is required"}),
+  email: composeValidators(
+    customIsRequired,
+    isValidEmail
+  )(),
+  photo: isRequired({message: "Photo is required"})
+})
+  
+
 
 class ContactForm extends Component {
 
-  state = {
-    contact: emptyContact
-  };
-
-  componentDidMount() {
-    if (this.props.selectedContact !== null) {
-      this.setState({
-        contact: this.props.selectedContact
-      });
-    }
-  };
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.selectedContact !== this.props.selectedContact) {
-      this.setState({
-        contact: nextProps.selectedContact || emptyContact
-      });
-    }
-  };
-
-  onFormSubmit = evt => {
-    evt.preventDefault();
-    if (this.state.contact.id) {
-      this.props.updateContact(this.state.contact);
+  onFormSubmit = values => {
+    if (this.props.initialValues.id) {
+      this.props.updateContact(values);
+      this.props.history.goBack();
     } else {
       const newContact = {
-        ...this.state.contact,
+        ...values,
         id: cuid(),
         photo: '/assets/user.png'
       }
       this.props.createContact(newContact);
+      this.props.history.push('/contacts');
     }
   };
 
-  onInputChange = evt => {
-    const newContact = this.state.contact;
-    newContact[evt.target.name] = evt.target.value;
-    this.setState({
-      contact: newContact
-    });
-  };
-
   render() {
-    const { handleCancel } = this.props;
-    const { contact } = this.state;
+  
     return (
-      <Segment>
-        <Form onSubmit={this.onFormSubmit}>
-          <Form.Field>
-            <label>First Name</label>
-            <input name="firstName" onChange={this.onInputChange} value={contact.firstName} placeholder='First Name' />
-          </Form.Field>
-          <Form.Field>
-            <label>Last Name</label>
-            <input name="lastName" onChange={this.onInputChange} value={contact.lastName}  placeholder='Last Name' />
-          </Form.Field>
-          <Form.Field>
-            <label>Telephone</label>
-            <input name="phone" onChange={this.onInputChange} value={contact.phone} placeholder='Your number phone' />
-          </Form.Field>
-          <Form.Field>
-            <label>Company</label>
-            <input name="company" onChange={this.onInputChange} value={contact.company} placeholder='Your Company' />
-          </Form.Field>
-          <Form.Field>
-            <label>Email</label>
-            <input name="email" onChange={this.onInputChange} value={contact.email} placeholder='Your Email' />
-          </Form.Field>
-          <Form.Field>
-            <label>Photo</label>
-            <input name="photo" onChange={this.onInputChange} value={contact.photo} placeholder='Your Photo' />
-          </Form.Field>
-          <Button 
-            type='submit' 
-            color="teal" 
-            content="Submit"
-          />
-          <Button 
-            type='button'
-            color='grey'
-            floated='right'
-            content='Cancel'
-            onClick={handleCancel}
-          />
-        </Form>
-      </Segment>
-      
-    )
+        <Segment>
+          <Form onSubmit={this.props.handleSubmit(this.onFormSubmit)}>
+            <Field
+              name="firstName"
+              type="text"
+              component={TextInput}
+              placeholder="Enter Your Name"
+            />
+            <Field
+              name="lastName"
+              type="text"
+              component={TextInput}
+              placeholder="Enter Your Surname"
+            />
+             <Field
+              name="phone"
+              component={TextInput}
+              type="text" 
+              step="any" 
+              placeholder="Phone Number"
+              style={{ marginBottom: "15px" }}
+            />
+            <Field
+              name="company"
+              type="text"
+              component={TextInput}
+              placeholder="Enter Your Company"
+            />
+            <Field
+              name="email"
+              type="text"
+              component={TextInput}
+              placeholder="Enter Your Email"
+            />
+            <Field
+              name="photo"
+              type="file"
+              component={FileInput}
+            />
+            <Button 
+              type='submit' 
+              color="teal" 
+              content="Submit"
+            />
+            <Button 
+              type='button'
+              color='grey'
+              floated='right'
+              content='Cancel'
+              onClick={this.props.history.goBack}
+            />
+          </Form>
+        </Segment>
+    );
   }
-}
+};
 
-export default connect(null,actions)(ContactForm);
+export default connect(mapState, actions)(
+  reduxForm({ form: 'contactForm', enableReinitialize: true, validate })(ContactForm)
+);

@@ -4,7 +4,7 @@ import Contacts from './Contacts';
 class ContactList extends Component {
   
   render() {
-    const { contacts, onContactOpen, deleteContact } = this.props;
+    const { contacts, deleteContact } = this.props;
 
     return (
       <div>
@@ -13,7 +13,6 @@ class ContactList extends Component {
           <Contacts 
             key={contact.id} 
             contact={contact} 
-            onContactOpen={onContactOpen} 
             deleteContact={deleteContact} 
           />
         ))}
