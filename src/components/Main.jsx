@@ -23,22 +23,16 @@ class Main extends Component {
     const { contacts, loading } = this.props;
     if (loading) return <LoadingComponent inverted={true} />
     return (
-      <div>
-        <Grid>
-          <Grid.Column width={6}>
-            
-          </Grid.Column>
-          <Grid.Column width={10} style={{ paddingTop: "15px" }}> 
-            <ContactList 
-              deleteContact={this.handleDeleteContact} 
-              contacts={contacts} 
-            />
-          </Grid.Column>
-        </Grid>
-      </div>
-      
-    )
+      <Grid centered columns={2}>
+        <Grid.Column>
+          <ContactList 
+            deleteContact={this.handleDeleteContact} 
+            contacts={contacts} 
+          /> 
+        </Grid.Column>
+      </Grid> 
+    );
   }
-}
+};
 
 export default connect(mapState, actions)(Main);
