@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 import { Grid } from 'semantic-ui-react';
 import ContactList from './ContactList';
 import { deleteContact } from '../app/actions/contactActions';
+import LoadingComponent from '../app/LoadingComponent';
 
 const mapState = state => ({
-  contacts: state.contacts
+  contacts: state.contacts,
+  loading: state.async.loading
 });
 
 const actions = {
@@ -18,7 +20,8 @@ class Main extends Component {
   };
 
   render() {
-    const { contacts } = this.props;
+    const { contacts, loading } = this.props;
+    if (loading) return <LoadingComponent inverted={true} />
     return (
       <div>
         <Grid>

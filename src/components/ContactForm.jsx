@@ -84,7 +84,7 @@ class ContactForm extends Component {
   };
 
   render() {
-  
+  const { invalid, submitting, pristine } = this.props;
     return (
         <Segment>
           <Form onSubmit={this.props.handleSubmit(this.onFormSubmit)}>
@@ -129,6 +129,7 @@ class ContactForm extends Component {
               type='submit' 
               color="teal" 
               content="Submit"
+              disabled={invalid || submitting || pristine}
             />
             <Button 
               type='button'

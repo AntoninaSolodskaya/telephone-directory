@@ -1,4 +1,13 @@
-import { CREATE_CONTACT, DELETE_CONTACT, UPDATE_CONTACT } from '../constants/contactConstants';
+import { CREATE_CONTACT, DELETE_CONTACT, UPDATE_CONTACT, FETCH_CONTACTS } from '../constants/contactConstants';
+import { asyncActionStart, asyncActionError, asyncActionFinish } from '../async/asyncActions';
+import { fetchSampleData } from '../data/mockApi';
+
+export const fetchContacts = contacts => {
+  return {
+    type: FETCH_CONTACTS,
+    payload: contacts
+  }
+};
 
 export const createContact = (contact) => {
   return {
@@ -7,7 +16,7 @@ export const createContact = (contact) => {
       contact
     }
   }
-}
+};
 
 export const updateContact = (contact) => {
   return {
@@ -16,13 +25,27 @@ export const updateContact = (contact) => {
       contact
     }
   }
-}
+};
 
 export const deleteContact = (contactId) => {
   return {
     type: DELETE_CONTACT,
     payload: {
       contactId
+    }
+  }
+};
+
+export const loadContacts = () => {
+  return async dispatch => {
+    try {
+      dispatch(asyncActionStart())
+      let contacts = await fetchSampleData();
+      dispatch(fetchContacts(contacts))
+      dispatch(asyncActionFinish());
+    } catch (error) {
+      console.log(error);
+      dispatch(asyncActionError());
     }
   }
 }
