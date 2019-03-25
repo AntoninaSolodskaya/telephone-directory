@@ -7,10 +7,8 @@ import './index.css';
 import App from './app/App';
 import * as serviceWorker from './serviceWorker';
 import { configureStore } from './app/store/configureStore';
-import { loadContacts } from './app/actions/contactActions';
 
 const store = configureStore();
-store.dispatch(loadContacts());
 
 const rootEl =  document.getElementById('root');
 

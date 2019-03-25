@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { firestoreConnect, isLoaded, isEmpty } from 'react-redux-firebase';
 import { Grid } from 'semantic-ui-react';
 import ContactList from './ContactList';
 import { deleteContact } from '../app/actions/contactActions';
 import LoadingComponent from '../app/LoadingComponent';
 
 const mapState = state => ({
-  contacts: state.contacts,
-  loading: state.async.loading
+  contacts: state.firestore.ordered.contacts,
 });
 
 const actions = {
@@ -20,8 +20,8 @@ class Main extends Component {
   };
 
   render() {
-    const { contacts, loading } = this.props;
-    if (loading) return <LoadingComponent inverted={true} />
+    const { contacts } = this.props;
+    if (!isLoaded(contacts) || isEmpty(contacts)) return <LoadingComponent inverted={true} />
     return (
       <Grid centered columns={2}>
         <Grid.Column>
@@ -35,4 +35,6 @@ class Main extends Component {
   }
 };
 
-export default connect(mapState, actions)(Main);
+export default connect(mapState, actions)(
+  firestoreConnect([{ collection: 'contacts' }])(Main)
+);

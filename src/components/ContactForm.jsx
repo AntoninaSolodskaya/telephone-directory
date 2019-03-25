@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withFirestore } from 'react-redux-firebase';
 import { Field, reduxForm } from 'redux-form';
 import { composeValidators, combineValidators, isNumeric, createValidator, isRequired, hasLengthGreaterThan } from 'revalidate';
 import { Form, Button, Segment } from 'semantic-ui-react';
 import { createContact, updateContact } from '../app/actions/contactActions';
-import cuid from 'cuid';
 import TextInput  from '../app/form/TextInput';
 import FileInput from '../app/form/FileInput';
 
-const mapState = (state, ownProps) => {
-  const contactId = ownProps.match.params.id;
-
+const mapState = state => {
+  
   let contact = {};
 
-  if (contactId && state.contacts.length > 0) {
-    contact = state.contacts.filter(contact => contact.id === contactId)[0];
+  if (state.firestore.ordered.contacts && state.firestore.ordered.contacts[0]) {
+    contact = state.firestore.ordered.contacts[0];
   }
 
   return {
-    initialValues: contact
+    initialValues: contact,
+    contact
   }
 };
 
@@ -68,17 +68,19 @@ const validate = combineValidators({
 
 class ContactForm extends Component {
 
+  async componentDidMount() {
+    const {firestore, match} = this.props;
+    await firestore.get(`contacts/${match.params.id}`);
+  };
+
   onFormSubmit = values => {
     if (this.props.initialValues.id) {
       this.props.updateContact(values);
+      
       this.props.history.goBack();
     } else {
-      const newContact = {
-        ...values,
-        id: cuid(),
-        photo: '/assets/user.png'
-      }
-      this.props.createContact(newContact);
+      this.props.createContact(values);
+      console.log(values);
       this.props.history.push('/contacts');
     }
   };
@@ -144,6 +146,8 @@ class ContactForm extends Component {
   }
 };
 
-export default connect(mapState, actions)(
-  reduxForm({ form: 'contactForm', enableReinitialize: true, validate })(ContactForm)
+export default withFirestore(
+  connect(mapState, actions)(
+    reduxForm({ form: 'contactForm', enableReinitialize: true, validate })(ContactForm)
+  )
 );
