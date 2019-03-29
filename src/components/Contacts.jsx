@@ -3,15 +3,17 @@ import { Link } from 'react-router-dom';
 import { Card, Image, Button, List } from 'semantic-ui-react';
 
 class Contacts extends Component {
+
   render() {
+    
     const { contact, deleteContact } = this.props;
+    
     return (
       <Card style={{ width: "500px" }}>
         <Card.Content>
           <Image 
-            as={Link}
-            to={`/contact/${contact.id}`}
-            size='tiny' 
+            size='tiny'
+            id="myimg" 
             src={contact.photo || "assets/user.png"} 
             style={{ marginBottom: "0" }} 
           />

@@ -7,6 +7,7 @@ import { Form, Button, Segment } from 'semantic-ui-react';
 import { createContact, updateContact } from '../app/actions/contactActions';
 import TextInput  from '../app/form/TextInput';
 import FileInput from '../app/form/FileInput';
+import firebase from '../app/config/firebase';
 
 const mapState = state => {
   
@@ -21,7 +22,6 @@ const mapState = state => {
     contact
   }
 };
-
 
 const actions = {
   createContact,
@@ -68,80 +68,119 @@ const validate = combineValidators({
 
 class ContactForm extends Component {
 
+  state={
+    url: "",
+    image: null
+  };
+  
+  onChange = e => {
+    if (e.target.files[0]) {
+      const image = e.target.files[0];
+      this.setState(() => ({image}));
+      const storageRef = firebase.storage().ref();
+    
+      const uploadTask = storageRef.child("images/" + image.name).put(image);
+      uploadTask.on('state_changed', 
+      (snapshot) => {
+        storageRef.child(`images/${image.name}`).getDownloadURL().then(url => {    
+          
+        this.setState({url})
+        console.log(url);
+        })
+      }, (error) => {
+        console.log(error);
+      }, () => {
+        
+      }
+    )}
+  };
+
   async componentDidMount() {
     const {firestore, match} = this.props;
-    await firestore.get(`contacts/${match.params.id}`);
+    await firestore.setListener(`contacts/${match.params.id}`);
+  };
+
+  async componentWillUnmount() {
+    const {firestore, match} = this.props;
+    await firestore.unsetListener(`contacts/${match.params.id}`);
   };
 
   onFormSubmit = values => {
     if (this.props.initialValues.id) {
       this.props.updateContact(values);
-      
       this.props.history.goBack();
     } else {
-      this.props.createContact(values);
+      const newContact = {
+        ...values,
+        photo: this.state.url || '/assets/user.png'
+      }
+      values = newContact;
+      this.props.createContact(newContact);
       console.log(values);
       this.props.history.push('/contacts');
     }
   };
 
+
   render() {
   const { invalid, submitting, pristine } = this.props;
     return (
-        <Segment>
-          <Form onSubmit={this.props.handleSubmit(this.onFormSubmit)}>
+      <Segment>
+        <Form onSubmit={this.props.handleSubmit(this.onFormSubmit)}>
+          <Field
+            name="firstName"
+            type="text"
+            component={TextInput}
+            placeholder="Enter Your Name"
+          />
+          <Field
+            name="lastName"
+            type="text"
+            component={TextInput}
+            placeholder="Enter Your Surname"
+          />
             <Field
-              name="firstName"
-              type="text"
-              component={TextInput}
-              placeholder="Enter Your Name"
-            />
-            <Field
-              name="lastName"
-              type="text"
-              component={TextInput}
-              placeholder="Enter Your Surname"
-            />
-             <Field
-              name="phone"
-              component={TextInput}
-              type="text" 
-              step="any" 
-              placeholder="Phone Number"
-              style={{ marginBottom: "15px" }}
-            />
-            <Field
-              name="company"
-              type="text"
-              component={TextInput}
-              placeholder="Enter Your Company"
-            />
-            <Field
-              name="email"
-              type="text"
-              component={TextInput}
-              placeholder="Enter Your Email"
-            />
-            <Field
-              name="photo"
-              type="file"
-              component={FileInput}
-            />
-            <Button 
-              type='submit' 
-              color="teal" 
-              content="Submit"
-              disabled={invalid || submitting || pristine}
-            />
-            <Button 
-              type='button'
-              color='grey'
-              floated='right'
-              content='Cancel'
-              onClick={this.props.history.goBack}
-            />
-          </Form>
-        </Segment>
+            name="phone"
+            component={TextInput}
+            type="text" 
+            step="any" 
+            placeholder="Phone Number"
+            style={{ marginBottom: "15px" }}
+          />
+          <Field
+            name="company"
+            type="text"
+            component={TextInput}
+            placeholder="Enter Your Company"
+          />
+          <Field
+            name="email"
+            type="text"
+            component={TextInput}
+            placeholder="Enter Your Email"
+          />
+          <Field
+            name="photo"
+            type="file"
+            component={FileInput}
+            onChange={this.onChange}
+          />
+          <Button 
+            type='submit' 
+            color="teal" 
+            content="Submit"
+            disabled={invalid || submitting || pristine}
+            onClick={this.props.onChange}
+          />
+          <Button 
+            type='button'
+            color='grey'
+            floated='right'
+            content='Cancel'
+            onClick={this.props.history.goBack}
+          />
+        </Form>
+      </Segment>
     );
   }
 };

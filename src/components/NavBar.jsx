@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Container, Input, Menu, Button } from 'semantic-ui-react';
-// import SearchInput from '../app/form/SearchInput';
+import { Container, Menu, Button } from 'semantic-ui-react';
 
 class NavBar extends Component {
   render() {
@@ -27,12 +26,6 @@ class NavBar extends Component {
               />
             </Menu.Item>
           </Container>
-          <Menu.Menu position="right">
-            <Menu.Item>
-              <Input icon="search" placeholder="Search..." />
-              {/* <SearchInput /> */}
-            </Menu.Item>
-          </Menu.Menu>
         </Menu>
       </div>
     )

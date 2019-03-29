@@ -7,7 +7,7 @@ import { deleteContact } from '../app/actions/contactActions';
 import LoadingComponent from '../app/LoadingComponent';
 
 const mapState = state => ({
-  contacts: state.firestore.ordered.contacts,
+  contacts: state.firestore.ordered.contacts
 });
 
 const actions = {
@@ -20,15 +20,17 @@ class Main extends Component {
   };
 
   render() {
+   
     const { contacts } = this.props;
+
     if (!isLoaded(contacts) || isEmpty(contacts)) return <LoadingComponent inverted={true} />
     return (
       <Grid centered columns={2}>
         <Grid.Column>
           <ContactList 
             deleteContact={this.handleDeleteContact} 
-            contacts={contacts} 
-          /> 
+            contacts={contacts}  
+          />   
         </Grid.Column>
       </Grid> 
     );
@@ -36,5 +38,4 @@ class Main extends Component {
 };
 
 export default connect(mapState, actions)(
-  firestoreConnect([{ collection: 'contacts' }])(Main)
-);
+  firestoreConnect([{ collection: 'contacts'}])(Main));

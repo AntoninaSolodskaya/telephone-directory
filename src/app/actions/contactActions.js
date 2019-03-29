@@ -1,8 +1,6 @@
 import { FETCH_CONTACTS } from '../constants/contactConstants';
 import { asyncActionStart, asyncActionError, asyncActionFinish } from '../async/asyncActions';
 import { fetchSampleData } from '../data/mockApi';
-import cuid from 'cuid';
-import firebase from '../config/firebase';
 
 export const fetchContacts = contacts => {
   return {
@@ -12,18 +10,22 @@ export const fetchContacts = contacts => {
 };
 
 export const createNewContact = contact => {
+
   return {
     ...contact
   }
 };
 
 export const createContact = contact => {
-  return async (dispatch, getState, {getFirestore}) => {
+ 
+  return async (dispatch, getState, {getFirestore, getFirebase}) => {
     const firestore = getFirestore();
-    let newContact = createNewContact(contact)
+    let newContact = createNewContact(contact);
+  
     try {
       let createdContact = await firestore.add(`contacts`, newContact);
-      console.log(createdContact);
+      console.log(createdContact); 
+     
     } catch (error) {
       console.log(error);
     }
