@@ -2,24 +2,31 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withFirestore } from 'react-redux-firebase';
 import { Field, reduxForm } from 'redux-form';
-import { composeValidators, combineValidators, isNumeric, createValidator, isRequired, hasLengthGreaterThan } from 'revalidate';
+import { 
+  composeValidators, 
+  combineValidators, 
+  isNumeric, 
+  createValidator, 
+  isRequired, 
+  hasLengthGreaterThan 
+} from 'revalidate';
 import { Form, Button, Segment } from 'semantic-ui-react';
 import { createContact, updateContact } from '../app/actions/contactActions';
 import TextInput  from '../app/form/TextInput';
 import FileInput from '../app/form/FileInput';
 import firebase from '../app/config/firebase';
 
-const mapState = state => {
-  
+const mapState = (state, ownProps) => {
+  const contactId = ownProps.match.params.id;
+
   let contact = {};
 
-  if (state.firestore.ordered.contacts && state.firestore.ordered.contacts[0]) {
-    contact = state.firestore.ordered.contacts[0];
+  if (contactId && state.firestore.ordered.contacts.length > 0) {
+    contact = state.firestore.ordered.contacts.filter(contact => contact.id === contactId)[0];
   }
 
   return {
-    initialValues: contact,
-    contact
+    initialValues: contact
   }
 };
 
@@ -78,12 +85,11 @@ class ContactForm extends Component {
       const image = e.target.files[0];
       this.setState(() => ({image}));
       const storageRef = firebase.storage().ref();
-    
       const uploadTask = storageRef.child("images/" + image.name).put(image);
+
       uploadTask.on('state_changed', 
       (snapshot) => {
-        storageRef.child(`images/${image.name}`).getDownloadURL().then(url => {    
-          
+        storageRef.child(`images/${image.name}`).getDownloadURL().then(url => {       
         this.setState({url})
         console.log(url);
         })
@@ -104,29 +110,29 @@ class ContactForm extends Component {
     const {firestore, match} = this.props;
     await firestore.unsetListener(`contacts/${match.params.id}`);
   };
-
+ 
   onFormSubmit = values => {
     if (this.props.initialValues.id) {
       this.props.updateContact(values);
       this.props.history.goBack();
     } else {
+     
       const newContact = {
         ...values,
         photo: this.state.url || '/assets/user.png'
       }
       values = newContact;
+      
       this.props.createContact(newContact);
-      console.log(values);
-      this.props.history.push('/contacts');
+      this.props.history.push('/contacts');   
     }
   };
 
-
   render() {
-  const { invalid, submitting, pristine } = this.props;
+  const { invalid, submitting, pristine, handleSubmit } = this.props;
     return (
       <Segment>
-        <Form onSubmit={this.props.handleSubmit(this.onFormSubmit)}>
+        <Form onSubmit={handleSubmit(this.onFormSubmit)}>
           <Field
             name="firstName"
             type="text"
@@ -170,7 +176,6 @@ class ContactForm extends Component {
             color="teal" 
             content="Submit"
             disabled={invalid || submitting || pristine}
-            onClick={this.props.onChange}
           />
           <Button 
             type='button'
@@ -187,6 +192,6 @@ class ContactForm extends Component {
 
 export default withFirestore(
   connect(mapState, actions)(
-    reduxForm({ form: 'contactForm', enableReinitialize: true, validate })(ContactForm)
+    reduxForm({ form: 'contactForm', validate })(ContactForm)
   )
 );

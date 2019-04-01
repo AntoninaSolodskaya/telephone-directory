@@ -4,45 +4,55 @@ import Contacts from './Contacts';
 
 class ContactList extends Component {
   state = {
-    search: ''
+    search: '',
+    currentlyDisplayed: this.props.contacts
   };
 
+  componentWillReceiveProps(nextProps){
+    const filteredContacts = nextProps.contacts.filter(contact => {
+      return contact.firstName.indexOf(this.state.search) !== -1});
+    this.setState({currentlyDisplayed: filteredContacts});
+  };
 
-  handleSearchChange = (e) => {
+  updateSearch = event => {
+    let newlyDisplayed = this.state.currentlyDisplayed.filter(
+      (contact) => { 
+        return (
+          contact.firstName.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1
+          || contact.lastName.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1
+        )}
+    )
+    console.log(newlyDisplayed);
     this.setState({
-      search: e.target.value.substr(0, 20)
+      search: event.target.value.substr(0, 20),
+      currentlyDisplayed: newlyDisplayed
     })
-  }
+  };
 
   render() {
-    const { search } = this.state;
-    const { contacts, deleteContact } = this.props;
+    const { search, currentlyDisplayed } = this.state;
+    const { deleteContact } = this.props;
    
-    let filteredContacts = contacts.filter(contact => {
-      return contact.firstName.indexOf(this.state.search) !== -1;
-    });
-
     return (
       <div>
         <h3 style={{color: "teal"}}>Contacts:</h3>
         <Input
           type="text"
           placeholder="Search contacts..."
-          onChange={this.handleSearchChange}
+          onChange={this.updateSearch}
           value={search}
           icon="search"
         />
-        {filteredContacts.map(contact => (
+        {currentlyDisplayed.map(contact => (
           <Contacts 
             key={contact.id} 
             contact={contact} 
             deleteContact={deleteContact} 
           />
         ))}
-      </div>
-      
-    )
+      </div> 
+    );
   }
-}
+};
 
 export default ContactList;

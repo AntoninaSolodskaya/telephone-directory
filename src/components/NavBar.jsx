@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, withRouter } from 'react-router-dom';
 import { Container, Menu, Button } from 'semantic-ui-react';
 
 class NavBar extends Component {
@@ -9,6 +9,8 @@ class NavBar extends Component {
         <Menu inverted fixed="top" style={{backgroundColor: "teal"}}>
           <Container>
             <Menu.Item 
+              as={NavLink}
+              to="/"
               name="My Phone Book" 
               style={{ fontSize: "22px"}} 
             />
@@ -32,5 +34,5 @@ class NavBar extends Component {
   }
 }
 
-export default NavBar;
+export default withRouter(NavBar);
   
