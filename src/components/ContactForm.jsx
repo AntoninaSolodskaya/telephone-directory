@@ -8,7 +8,8 @@ import {
   isNumeric, 
   createValidator, 
   isRequired, 
-  hasLengthGreaterThan 
+  hasLengthGreaterThan,
+  hasLengthBetween
 } from 'revalidate';
 import { Form, Button, Segment } from 'semantic-ui-react';
 import { createContact, updateContact } from '../app/actions/contactActions';
@@ -59,8 +60,8 @@ const validate = combineValidators({
     isNumeric({
       message: 'Must be a number'
     }),
-    hasLengthGreaterThan(11)({
-      message: 'Must be 12 characters or less'
+    hasLengthBetween(11, 15)({
+      message: 'Must be another characters'
     })
   )(),
   company: isRequired({message: "Company is required"}),

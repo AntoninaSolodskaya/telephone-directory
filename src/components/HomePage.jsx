@@ -9,7 +9,7 @@ const HomePage = ({history}) => {
             <div className="content">My Phone Book</div>
           </h1>
           <div onClick={() => history.push('/contacts')} className="ui huge white inverted button">
-            Get Started
+            Click Here
             <i className="right arrow icon" />
           </div>
         </div>
