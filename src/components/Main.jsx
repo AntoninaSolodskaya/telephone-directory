@@ -23,7 +23,7 @@ class Main extends Component {
    
     const { contacts } = this.props;
 
-    if (!isLoaded(contacts) || isEmpty(contacts)) return <LoadingComponent inverted={true} />
+    if (!isLoaded(contacts)) return <LoadingComponent inverted={true} />
     return (
       <Grid centered columns={2}>
         <Grid.Column>
